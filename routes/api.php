@@ -24,7 +24,7 @@ use App\Http\Controllers\Staff\StaffGuestManagementController;
 use App\Http\Controllers\Staff\StaffController;
 use Illuminate\Support\Facades\Route;
 
-
+ 
 // Admin Routes
 Route::prefix('admin')->group(function () {
     // Public authentication routes
