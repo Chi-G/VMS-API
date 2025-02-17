@@ -195,14 +195,6 @@ The Visitor Management System (VMS) API is designed to manage visitor interactio
 
 Use a tool like Postman or cURL to interact with the API endpoints. Ensure you have the necessary authentication tokens and permissions to access the endpoints.
 
-## Contributing
-
-Contributions are welcome! Please fork the repository and submit a pull request with your changes.
-
-## License
-
-This project is licensed under the MIT License. See the LICENSE file for details.
-
 ## Author
 
 Chijindu Nwokeohuru
