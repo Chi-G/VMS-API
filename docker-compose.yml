@@ -11,7 +11,7 @@ services:
         volumes:
             - ./:/var/www
         networks:
-            - laravel
+            - vms_net
 
     db:
         image: mysql:8.0
@@ -27,7 +27,7 @@ services:
         volumes:
             - dbdata:/var/lib/mysql
         networks:
-            - laravel
+            - vms_net
 
     nginx:
         image: nginx:1.21
@@ -39,10 +39,10 @@ services:
             - ./:/var/www
             - ./docker/nginx/conf.d:/etc/nginx/conf.d
         networks:
-            - laravel
+            - vms_net
 
 networks:
-    laravel:
+    vms_net:
         driver: bridge
 
 volumes:
