@@ -24,11 +24,12 @@ use App\Http\Controllers\Staff\StaffGuestManagementController;
 use App\Http\Controllers\Staff\StaffController;
 use Illuminate\Support\Facades\Route;
 
- 
+
 // Admin Routes
 Route::prefix('admin')->group(function () {
     // Public authentication routes
     Route::post('login', [AdminAuthController::class, 'login']);
+    Route::post('logout', [AdminAuthController::class, 'logout']);
     Route::post('verify-otp', [AdminAuthController::class, 'verifyOtp']);
     Route::post('forgot-password', [AdminAuthController::class, 'forgotPassword']);
     Route::post('reset-password', [AdminAuthController::class, 'resetPassword']);
