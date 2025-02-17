@@ -1,43 +1,53 @@
-version: "3"
+version: "3.8"
 
 services:
+    # PHP service
     app:
         build:
             context: .
             dockerfile: Dockerfile
+        image: vms_app
         container_name: vms_app
         restart: unless-stopped
+        tty: true
+        environment:
+            SERVICE_NAME: app
+            SERVICE_TAGS: dev
         working_dir: /var/www
         volumes:
-            - ./:/var/www
+            - .:/var/www
+            - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+        networks:
+            - vms_net
+
+    # Nginx service
+    web:
+        image: nginx:alpine
+        container_name: vms_web
+        restart: unless-stopped
+        tty: true
+        ports:
+            - "3001:80"
+        volumes:
+            - .:/var/www
+            - ./docker/nginx/conf.d:/etc/nginx/conf.d
         networks:
             - vms_net
 
     db:
-        image: mysql:8.0
+        image: mysql:5.7
         container_name: vms_db
         restart: unless-stopped
+        tty: true
+        ports:
+            - "3307:3306"
         environment:
-            MYSQL_DATABASE: ${DB_DATABASE:-laravel}
-            MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-secret}
-            MYSQL_PASSWORD: ${DB_PASSWORD:-secret}
-            MYSQL_USER: ${DB_USERNAME:-laravel}
-            SERVICE_TAGS: dev
-            SERVICE_NAME: mysql
+            MYSQL_DATABASE: ${DB_DATABASE}
+            MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+            MYSQL_PASSWORD: ${DB_PASSWORD}
+            MYSQL_USER: ${DB_USERNAME}
         volumes:
             - dbdata:/var/lib/mysql
-        networks:
-            - vms_net
-
-    nginx:
-        image: nginx:1.21
-        container_name: vms_nginx
-        restart: unless-stopped
-        ports:
-            - "8007:80"
-        volumes:
-            - ./:/var/www
-            - ./docker/nginx/conf.d:/etc/nginx/conf.d
         networks:
             - vms_net
 

@@ -1,45 +1,45 @@
-FROM php:8.2-fpm
+# Use the official PHP image as a base image
+FROM php:8.3-fpm
 
-# Install system dependencies
+# Set working directory
+WORKDIR /var/www
+
+# Install dependencies
 RUN apt-get update && apt-get install -y \
-    git \
-    curl \
-    libpng-dev \
-    libonig-dev \
-    libxml2-dev \
-    zip \
-    unzip \
-    libzip-dev \
-    netcat-openbsd \
-    npm
+  build-essential \
+  libpng-dev \
+  libjpeg-dev \
+  libfreetype6-dev \
+  libonig-dev \
+  libzip-dev \
+  locales \
+  zip \
+  jpegoptim optipng pngquant gifsicle \
+  vim \
+  unzip \
+  git \
+  curl
 
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install PHP extensions
-RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+  && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
 
-# Get latest Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
-# Set working directory
-WORKDIR /var/www
+# Install Composer
+COPY --from=composer:2.2 /usr/bin/composer /usr/bin/composer
 
 # Copy existing application directory contents
 COPY . /var/www
 
-# Copy startup script
-COPY start.sh /start.sh
-RUN chmod +x /start.sh
+# Copy existing application directory permissions
+COPY --chown=www-data:www-data . /var/www
 
-# Set permissions
-RUN chown -R www-data:www-data /var/www
+RUN cd /var/www && composer update
+# Change current user to www
+USER www-data
 
-# Install dependencies and setup
-RUN composer install --no-interaction --no-scripts
-
-# Expose port 9000 for PHP-FPM
+# Expose port 9000 and start php-fpm server
 EXPOSE 9000
-
-# Start with the startup script
-CMD ["/start.sh"]
+CMD ["php-fpm"]
