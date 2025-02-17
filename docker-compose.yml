@@ -18,16 +18,16 @@ services:
         container_name: vms_db
         restart: unless-stopped
         environment:
-            MYSQL_DATABASE: ${DB_DATABASE:-laravel}
+            MYSQL_DATABASE: ${DB_DATABASE:-vmsapp}
             MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-secret}
             MYSQL_PASSWORD: ${DB_PASSWORD:-secret}
-            MYSQL_USER: ${DB_USERNAME:-laravel}
+            MYSQL_USER: ${DB_USERNAME:-vmsapp}
             SERVICE_TAGS: dev
             SERVICE_NAME: mysql
         volumes:
             - dbdata:/var/lib/mysql
         networks:
-            - laravel
+            - vms-net
 
     nginx:
         image: nginx:1.21
@@ -39,10 +39,10 @@ services:
             - ./:/var/www
             - ./docker/nginx/conf.d:/etc/nginx/conf.d
         networks:
-            - laravel
+            - vms-net
 
 networks:
-    laravel:
+    vms-net:
         driver: bridge
 
 volumes:
