@@ -26,7 +26,7 @@ RUN chmod +x /start.sh
 
 RUN chown -R www-data:www-data /var/www
 
-RUN composer install --no-interaction --no-scripts --no-suggest
+RUN composer install
 
 RUN php artisan key:generate
 
