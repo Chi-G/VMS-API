@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
     # PHP service
-    app:
+    vms-app:
         build:
             context: .
             dockerfile: Dockerfile
@@ -21,7 +21,7 @@ services:
             - vms_net
 
     # Nginx service
-    web:
+    vms-web:
         image: nginx:alpine
         container_name: vms_web
         restart: unless-stopped
@@ -34,7 +34,7 @@ services:
         networks:
             - vms_net
 
-    db:
+    vms-db:
         image: mysql:5.7
         container_name: vms_db
         restart: unless-stopped
@@ -47,7 +47,7 @@ services:
             MYSQL_PASSWORD: ${DB_PASSWORD}
             MYSQL_USER: ${DB_USERNAME}
         volumes:
-            - dbdata:/var/lib/mysql
+            - vmsdbdata:/var/lib/mysql
         networks:
             - vms_net
 
@@ -56,5 +56,5 @@ networks:
         driver: bridge
 
 volumes:
-    dbdata:
+    vmsdbdata:
         driver: local
