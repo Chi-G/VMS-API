@@ -1,45 +1,48 @@
-FROM php:8.2-apache
+FROM php:8.2-fpm
 
-# Install dependencies including GD dependencies
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
-    libzip-dev \
+    git \
+    curl \
     libpng-dev \
-    libjpeg62-turbo-dev \
-    libfreetype6-dev \
+    libonig-dev \
+    libxml2-dev \
     zip \
-    unzip
+    unzip \
+    libzip-dev \
+    npm
 
-# Configure and install PHP extensions, including GD
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo pdo_mysql zip gd \
-    && a2enmod rewrite
+# Clear cache
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install Composer
+# Install PHP extensions
+RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
+
+# Get latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Set working directory
-WORKDIR /var/www/html
+WORKDIR /var/www
 
-# Copy composer files and install dependencies
-COPY composer.json composer.lock ./
-RUN composer install --no-dev --no-scripts --no-autoloader
+# Copy existing application directory contents
+COPY . /var/www
 
-# Copy application files
-COPY . .
+# Copy startup script
+COPY start.sh /start.sh
+RUN chmod +x /start.sh
 
-# Generate optimized autoload files
-RUN composer dump-autoload --optimize
+# Set permissions
+RUN chown -R www-data:www-data /var/www
 
-# Set permissions on storage and cache folders
-RUN chown -R www-data:www-data storage bootstrap/cache \
-    && chmod -R 775 storage bootstrap/cache
+# Install dependencies and setup
+RUN composer install --no-interaction --no-scripts
 
-# Copy custom Apache configuration (if needed)
-COPY ./docker/apache/000-default.conf /etc/apache2/sites-available/000-default.conf
+# Prepare environment file (if needed during build)
+# RUN cp .env.example .env
+# RUN php artisan key:generate
 
-# Copy entrypoint script and set execute permissions
-COPY start.sh /usr/local/bin/start.sh
-RUN chmod +x /usr/local/bin/start.sh
+# Expose port 9000 for PHP-FPM
+EXPOSE 9000
 
-# Start the entrypoint script
-ENTRYPOINT ["start.sh"]
+# Start with the startup script
+CMD ["/start.sh"]

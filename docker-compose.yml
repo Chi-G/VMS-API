@@ -1,42 +1,43 @@
-version: "3.8"
+version: "3"
 
 services:
     app:
-        build: .
-        ports:
-            - "8005:80"
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: vms_app
+        restart: unless-stopped
+        working_dir: /var/www
         volumes:
-            - .:/var/www/html
-        environment:
-            - APP_ENV=${APP_ENV:-local}
-            - APP_KEY=${DB_CONNECTION:-Wh2nCH1TmG/pPbQYWgZ/eYjkH+VTirnySwYspdap80Q=}
-            - DB_CONNECTION=${DB_CONNECTION:-MySQL}
-            - DB_HOST=${DB_HOST:-db}
-            - DB_PORT=${DB_PORT:-3306}
-            - DB_DATABASE=${DB_DATABASE:-laravel}
-            - DB_USERNAME=${DB_USERNAME:-vms_user}
-            - DB_PASSWORD=${DB_PASSWORD:-vms_pass}
-        depends_on:
-            db:
-                condition: service_healthy
+            - ./:/var/www
         networks:
             - vms-network
 
     db:
         image: mysql:8.0
-        volumes:
-            - db_data:/var/lib/mysql
+        container_name: vms_db
+        restart: unless-stopped
         environment:
-            - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-vms_root_pass}
-            - MYSQL_DATABASE=${DB_DATABASE:-laravel}
-            - MYSQL_USER=${DB_USERNAME:-vms_user}
-            - MYSQL_PASSWORD=${DB_PASSWORD:-vms_pass}
-        healthcheck:
-            test:
-                ["CMD-SHELL", "mysqladmin ping -uroot -p$$MYSQL_ROOT_PASSWORD"]
-            interval: 5s
-            timeout: 3s
-            retries: 10
+            MYSQL_DATABASE: ${DB_DATABASE:-laravel}
+            MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-secret}
+            MYSQL_PASSWORD: ${DB_PASSWORD:-secret}
+            MYSQL_USER: ${DB_USERNAME:-laravel}
+            SERVICE_TAGS: dev
+            SERVICE_NAME: mysql
+        volumes:
+            - dbdata:/var/lib/mysql
+        networks:
+            - vms-network
+
+    nginx:
+        image: nginx:1.21
+        container_name: vms_nginx
+        restart: unless-stopped
+        ports:
+            - "8006:80"
+        volumes:
+            - ./:/var/www
+            - ./docker/nginx/conf.d:/etc/nginx/conf.d
         networks:
             - vms-network
 
@@ -45,4 +46,5 @@ networks:
         driver: bridge
 
 volumes:
-    db_data:
+    dbdata:
+        driver: local
