@@ -32,7 +32,7 @@ services:
             MYSQL_PASSWORD: ${DB_PASSWORD:-secret}
             MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root_secret}
         volumes:
-            - dbdata:/var/lib/mysql
+            - vmsdbdata:/var/lib/mysql
         networks:
             - vms-network
         healthcheck:
@@ -60,7 +60,7 @@ networks:
         driver: bridge
 
 volumes:
-    dbdata:
+    vmsdbdata:
         driver: local
     appdata:
         driver: local
