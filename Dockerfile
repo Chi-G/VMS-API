@@ -28,8 +28,8 @@ WORKDIR /var/www
 COPY . /var/www
 
 # Copy startup script
-COPY start.sh /var/www/start.sh
-RUN chmod +x /var/www/start.sh
+COPY start.sh ./start.sh
+RUN chmod +x ./start.sh
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www
@@ -45,4 +45,4 @@ RUN composer install --no-interaction --no-scripts
 # EXPOSE 9000
 
 # Start with the startup script
-CMD ["sh", "/var/www/start.sh"]
+CMD ["sh", "./start.sh"]
