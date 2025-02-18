@@ -19,7 +19,8 @@ done
 
 # List directory contents to debug
 echo "Contents of current directory:"
-ls -la
+# ls -la
+echo $(ls)
 
 # Check if artisan file exists
 if [ ! -f artisan ]; then
