@@ -1,5 +1,4 @@
-# Stage 1: Build
-FROM php:8.2-fpm as builder
+FROM php:8.2-fpm
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -11,45 +10,32 @@ RUN apt-get update && apt-get install -y \
     zip \
     unzip \
     libzip-dev \
-    build-essential \
-    libjpeg-dev \
-    libfreetype6-dev \
-    locales \
-    jpegoptim optipng pngquant gifsicle \
-    vim \
     npm
 
+# Clear cache
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+
 # Install PHP extensions
-RUN docker-php-ext-install pdo_mysql      
-RUN docker-php-ext-install mbstring
-RUN docker-php-ext-install exif
-RUN docker-php-ext-install pcntl
-RUN docker-php-ext-install bcmath
-RUN docker-php-ext-install gd
-RUN docker-php-ext-install zip
+RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
 
-# Install Composer
+# Get latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
-# Copy application files
-WORKDIR /var/www
-COPY . .
-
-# Install dependencies
-RUN composer install --no-interaction --no-scripts
-
-# Stage 2: Runtime
-FROM php:8.2-fpm
-
-# Copy application files from the builder stage
-COPY --from=builder /var/www /var/www
 
 # Set working directory
 WORKDIR /var/www
 
+# Copy existing application directory contents
+COPY . /var/www
+
 # Copy startup script
 COPY start.sh /usr/local/bin/start.sh
 RUN chmod +x /usr/local/bin/start.sh
+
+# Set permissions
+RUN chown -R www-data:www-data /var/www
+
+# Install dependencies and setup
+RUN composer install --no-interaction --no-scripts
 
 # Start with the startup script
 CMD ["sh", "/usr/local/bin/start.sh"]
