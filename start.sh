@@ -1,7 +1,10 @@
 #!/bin/bash
 
-# Make sure we're in the Laravel project root directory
-# cd /var/www
+# Wait for MySQL to be ready
+echo "Waiting for MySQL to be ready..."
+until mysqladmin ping -h"$DB_HOST" --silent; do
+    sleep 2
+done
 
 # Run migrations and seeds
 echo "Running migrations..."
