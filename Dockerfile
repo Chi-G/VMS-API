@@ -45,4 +45,4 @@ RUN composer install --no-interaction --no-scripts
 EXPOSE 9000
 
 # Start with the startup script
-CMD ["start.sh"]
+CMD ["sh", "./start.sh"]
