@@ -49,7 +49,7 @@ services:
             - "8006:80"
         volumes:
             - appdata:/var/www
-            - ./docker/nginx/conf.d:/etc/nginx/conf.d
+            # - ./docker/nginx/conf.d:/etc/nginx/conf.d
         networks:
             - vms-network
         depends_on:
