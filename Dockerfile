@@ -42,7 +42,8 @@ RUN composer install --no-interaction --no-scripts
 # RUN php artisan key:generate
 
 # Expose port 9000 for PHP-FPM
-EXPOSE 9000
+# EXPOSE 9000
 
-# Start with the startup script
-CMD ["sh", "/start.sh"]
+ENTRYPOINT ["start.sh"]
+
+CMD ["php-fpm"]
