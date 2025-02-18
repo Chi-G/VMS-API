@@ -35,7 +35,7 @@ RUN chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
 # Copy custom Apache configuration (if needed)
-COPY ./apache/000-default.conf /etc/apache2/sites-available/000-default.conf
+COPY ./docker/apache/000-default.conf /etc/apache2/sites-available/000-default.conf
 
 # Copy entrypoint script and set execute permissions
 COPY start.sh /usr/local/bin/start.sh
