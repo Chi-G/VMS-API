@@ -27,7 +27,7 @@ WORKDIR /var/www
 
 # Copy existing application directory contents
 COPY . /var/www
-COPY ./docker/nginx/conf.d /etc/nginx/conf.d/app.conf
+
 # Copy startup script
 COPY start.sh /usr/local/bin/start.sh
 RUN chmod +x /usr/local/bin/start.sh
