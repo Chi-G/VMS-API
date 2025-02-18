@@ -36,11 +36,8 @@ COPY --from=builder /var/www /var/www
 WORKDIR /var/www
 
 # Copy startup script
-COPY start.sh ./start.sh
-RUN chmod +x ./start.sh
-
-# Set permissions
-RUN chown -R www-data:www-data /var/www
+COPY start.sh /usr/local/bin/start.sh
+RUN chmod +x /usr/local/bin/start.sh
 
 # Start with the startup script
-CMD ["sh", "./start.sh"]
+CMD ["sh", "/usr/local/bin/start.sh"]
