@@ -106,9 +106,13 @@ class AdminAuthController extends Controller
         return response()->json(['error' => 'Unable to reset password'], 500);
     }
 
-    public function profile(Request $request)
+    public function profile()
     {
-        return response()->json($request->user());
+        $admin = Auth::guard('admin')->user();
+        if (!$admin) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+        return response()->json(['admin' => $admin], 200);
     }
 
     public function logout(Request $request)
