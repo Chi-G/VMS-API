@@ -36,8 +36,8 @@ RUN chown -R www-data:www-data storage bootstrap/cache
 RUN chmod -R 775 storage bootstrap/cache
 
 # Copy entrypoint script and make it executable
-COPY entrypoint.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/entrypoint.sh
+COPY start.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/start.sh
 
 # Set the entrypoint
 ENTRYPOINT ["start.sh"]
