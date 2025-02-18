@@ -17,7 +17,7 @@ done
 
 # Run migrations and seeds
 echo "Running migrations..."
-ls -a
+echo $(ls)
 php artisan migrate --force
 echo "Running seeders..."
 php artisan db:seed --force
