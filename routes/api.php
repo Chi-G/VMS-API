@@ -35,7 +35,7 @@ Route::prefix('admin')->group(function () {
     Route::post('reset-password', [AdminAuthController::class, 'resetPassword']);
 
     // Profile route (requires authentication)
-    Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
+    Route::middleware(['auth:admin'])->group(function () {
         Route::get('profile', [AdminAuthController::class, 'profile']);
 
         // Notifications
