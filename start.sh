@@ -2,9 +2,11 @@
 
 # Wait for MySQL to be ready
 echo "Waiting for MySQL to be ready..."
-until mysqladmin ping -h"$DB_HOST" --silent; do
+until nc -z -v -w30 $DB_HOST $DB_PORT; do
+    echo "Waiting for database connection..."
     sleep 2
 done
+echo "Database is ready!"
 
 # Run migrations and seeds
 echo "Running migrations..."
