@@ -9,10 +9,9 @@ fi
 
 # Wait for database to be ready
 echo "Waiting for database connection..."
-until nc -z -v -w30 db 3306; do
-  echo "Waiting for database connection..."
-  # wait for 5 seconds before check again
-  sleep 5
+while ! php -r "try { new PDO('mysql:host=db;dbname=${DB_DATABASE}', '${DB_USERNAME}', '${DB_PASSWORD}'); echo 'connected'; } catch (PDOException \$e) { echo \$e->getMessage(); exit(1); }" > /dev/null 2>&1; do
+    echo "Waiting for database connection..."
+    sleep 5
 done
 
 # Run migrations and seeds
