@@ -10,27 +10,22 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Log;
 
 class AdminAuthController extends Controller
 {
     public function login(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|email',
-            'password' => 'required|min:6',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
-        }
-
         $admin = Admin::where('email', $request->email)->first();
 
         if (! $admin || ! Hash::check($request->password, $admin->password)) {
+            Log::warning('Invalid credentials for: ' . $request->email);
             return response()->json(['message' => 'Invalid credentials'], 401);
         }
 
         $token = $admin->createToken('admin-token', ['admin'])->plainTextToken;
+
+        Log::info('Token generated for: ' . $request->email . ' | Token: ' . $token);
 
         return response()->json([
             'message' => 'Login successful',
@@ -108,8 +103,12 @@ class AdminAuthController extends Controller
 
     public function profile()
     {
-        $admin = Auth::guard('admin')->user();
+        Log::info('Profile route hit. Token: ' . request()->header('Authorization'));
+
+        $admin = auth()->user();
+
         if (!$admin) {
+            Log::error('Unauthorized access - No user found.');
             return response()->json(['message' => 'Unauthorized'], 401);
         }
         return response()->json(['admin' => $admin], 200);
