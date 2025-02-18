@@ -1,4 +1,5 @@
-FROM php:8.2-fpm
+# Stage 1: Build
+FROM php:8.2-fpm as builder
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -10,7 +11,6 @@ RUN apt-get update && apt-get install -y \
     zip \
     unzip \
     libzip-dev \
-    netcat-openbsd \
     npm
 
 # Install PHP extensions
