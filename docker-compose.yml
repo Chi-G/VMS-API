@@ -1,60 +1,48 @@
 version: "3.8"
 
 services:
-    # PHP service
-    vms-app:
-        build:
-            context: .
-            dockerfile: Dockerfile
-        image: vms_app
-        container_name: vms_app
-        restart: unless-stopped
-        tty: true
-        environment:
-            SERVICE_NAME: app
-            SERVICE_TAGS: dev
-        working_dir: /var/www
-        volumes:
-            - .:/var/www
-            - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
-        networks:
-            - vms_net
-
-    # Nginx service
-    vms-web:
-        image: nginx:alpine
-        container_name: vms_web
-        restart: unless-stopped
-        tty: true
+    app:
+        build: .
         ports:
-            - "3005:80"
+            - "8005:80"
         volumes:
-            - .:/var/www
-            - ./docker/nginx/conf.d:/etc/nginx/conf.d
-        networks:
-            - vms_net
-
-    vms-db:
-        image: mysql:5.7
-        container_name: vms_db
-        restart: unless-stopped
-        tty: true
-        ports:
-            - "3309:3306"
+            - .:/var/www/html
         environment:
-            MYSQL_DATABASE: ${DB_DATABASE}
-            MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
-            MYSQL_PASSWORD: ${DB_PASSWORD}
-            MYSQL_USER: ${DB_USERNAME}
-        volumes:
-            - vmsdbdata:/var/lib/mysql
+            - APP_ENV=${APP_ENV}
+            - APP_KEY=${DB_CONNECTION}
+            - DB_CONNECTION=${DB_CONNECTION}
+            - DB_HOST=${DB_HOST}
+            - DB_PORT=${DB_PORT}
+            - DB_DATABASE=${DB_DATABASE}
+            - DB_USERNAME=${DB_USERNAME}
+            - DB_PASSWORD=${DB_PASSWORD}
+        depends_on:
+            db:
+                condition: service_healthy
         networks:
-            - vms_net
+            - vms-network
+
+    db:
+        image: mysql:8.0
+        volumes:
+            - db_data:/var/lib/mysql
+        environment:
+            - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+            - MYSQL_DATABASE=${DB_DATABASE}
+            - MYSQL_USER=${DB_USERNAME}
+            - MYSQL_PASSWORD=${DB_PASSWORD}
+        healthcheck:
+            test:
+                ["CMD-SHELL", "mysqladmin ping -uroot -p$$MYSQL_ROOT_PASSWORD"]
+            interval: 5s
+            timeout: 3s
+            retries: 10
+        networks:
+            - vms-network
 
 networks:
-    vms_net:
+    vms-network:
         driver: bridge
 
 volumes:
-    vmsdbdata:
-        driver: local
+    db_data:

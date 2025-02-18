@@ -1,40 +1,43 @@
-# Use the official PHP image as a base image
-FROM php:8.3-fpm
-
-# Set working directory
-WORKDIR /var/www
+FROM php:8.2-apache
 
 # Install dependencies
 RUN apt-get update && apt-get install -y \
-    git \
-    curl \
-    libpng-dev \
-    libonig-dev \
-    libxml2-dev \
+    libzip-dev \
     zip \
     unzip \
-    libzip-dev \
-    npm
+    && docker-php-ext-install pdo pdo_mysql zip
 
-# Clear cache
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+# Enable Apache rewrite module
+RUN a2enmod rewrite
 
-# Install PHP extensions
-RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
+# Copy custom Apache configuration to set the DocumentRoot to /var/www/html/public
+COPY ./docker/apache/000-default.conf /etc/apache2/sites-available/000-default.conf
 
 # Install Composer
-COPY --from=composer:2.5 /usr/bin/composer /usr/bin/composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copy existing application directory contents
-COPY . /var/www
+# Set working directory
+WORKDIR /var/www/html
 
-# Copy existing application directory permissions
-COPY --chown=www-data:www-data . /var/www
+# Copy composer files
+COPY composer.json composer.lock ./
 
-RUN cd /var/www && composer install
-# Change current user to www
-USER www-data
+# Install dependencies
+RUN composer install --no-dev --no-scripts --no-autoloader
 
-# Expose port 9000 and start php-fpm server
-EXPOSE 9000
-CMD ["php-fpm"]
+# Copy application files
+COPY . .
+
+# Generate optimized autoload files
+RUN composer dump-autoload --optimize
+
+# Set permissions for Laravel storage directories
+RUN chown -R www-data:www-data storage bootstrap/cache
+RUN chmod -R 775 storage bootstrap/cache
+
+# Copy entrypoint script and make it executable
+COPY entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+# Set the entrypoint
+ENTRYPOINT ["start.sh"]
