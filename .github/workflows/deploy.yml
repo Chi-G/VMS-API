@@ -2,7 +2,7 @@ name: Deploy to VPS
 
 on:
   push:
-    branches: [main]
+    branches: [dev]
 
 jobs:
   deploy:
@@ -49,4 +49,4 @@ jobs:
 
       # Push the code to the production server l
       - name: Push to Production Server
-        run: git push production main
+        run: git push production dev
