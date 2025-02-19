@@ -47,6 +47,6 @@ jobs:
       - name: Verify remote
         run: git remote get-url production
 
-      # Push the code to the production server l
+      # Push the code to the production server
       - name: Push to Production Server
         run: git push production dev
