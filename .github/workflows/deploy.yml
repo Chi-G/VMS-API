@@ -1,0 +1,52 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      # Set up SSH for secure access to the production server
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.VMS_SSH_PRIVATE_KEY }}
+
+      # Add GitHub to known hosts to prevent MITM attacks
+      - name: Add GitHub.com to known hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
+
+      # Test SSH connection to GitHub
+      - name: Test SSH connection
+        run: ssh -T git@github.com || true
+
+      # Add production server to known hosts to prevent MITM attacks
+      - name: Add production server to known hosts
+        run: |
+          ssh-keyscan -H 83.136.255.151 >> ~/.ssh/known_hosts
+
+      # Add production server as a Git remote
+      - name: Add production server as a remote
+        run: |
+          git remote remove production || true
+          git remote add production ssh://root@83.136.255.151/var/repo/vms-api
+          git remote -v
+
+      # Verify the remote has been added
+      - name: Verify remote
+        run: git remote get-url production
+
+      # Push the code to the production server l
+      - name: Push to Production Server
+        run: git push production main
