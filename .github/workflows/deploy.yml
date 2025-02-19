@@ -16,14 +16,10 @@ jobs:
           fetch-depth: 0
 
       # Set up SSH for secure access to the production server
-      - name: Setup SSH
-        run: |
-          mkdir -p ~/.ssh
-          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan github.com >> ~/.ssh/known_hosts
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.DAD_SSH_PRIVATE_KEY }}
 
       # Add GitHub to known hosts to prevent MITM attacks
       - name: Add GitHub.com to known hosts
