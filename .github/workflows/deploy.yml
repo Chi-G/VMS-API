@@ -19,7 +19,7 @@ jobs:
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.5.3
         with:
-          ssh-private-key: ${{ secrets.DAD_SSH_PRIVATE_KEY }}
+          ssh-private-key: ${{ secrets.VMS_SSH_PRIVATE_KEY }}
 
       # Add GitHub to known hosts to prevent MITM attacks
       - name: Add GitHub.com to known hosts
