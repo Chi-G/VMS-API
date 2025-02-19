@@ -15,7 +15,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      # Set up SSH for secure access to the production server
+      # Set up SSH for secure access to the production serve
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.5.3
         with:
