@@ -49,7 +49,7 @@ Route::prefix('admin')->group(function () {
         Route::delete('settings/delete', [SettingsController::class, 'delete']);
         Route::get('roles', [SettingsController::class, 'fetchRoles']);
         Route::post('roles/update', [SettingsController::class, 'updateRoles']);
-        Route::get('notifications', [SettingsController::class, 'fetchNotifications']);
+        Route::get('notifications', [SettingsController::class, 'fetchNotifications']); 
         Route::post('notifications/update', [SettingsController::class, 'updateNotifications']);
         Route::get('data-retention', [SettingsController::class, 'fetchDataRetention']);
         Route::post('data-retention/update', [SettingsController::class, 'updateDataRetention']);
