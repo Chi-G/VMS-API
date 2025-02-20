@@ -2,10 +2,10 @@
 
 namespace App\Http;
 
+use Illuminate\Auth\Middleware\Authenticate;
+use Illuminate\Routing\Middleware\ThrottleRequests;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
-use Illuminate\Routing\Middleware\ThrottleRequests;
-use Illuminate\Auth\Middleware\Authenticate;
 
 class Kernel extends HttpKernel
 {
@@ -15,8 +15,8 @@ class Kernel extends HttpKernel
 
     protected $middlewareGroups = [
         'api' => [
-            \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
-            'auth:sanctum',
+            // \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+            // 'auth:sanctum',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],
 
@@ -33,6 +33,6 @@ class Kernel extends HttpKernel
     protected $routeMiddleware = [
         'auth' => \App\Http\Middleware\Authenticate::class,
         'auth.api' => \App\Http\Middleware\Authenticate::class,
-        'auth:sanctum' => \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+        'auth:sanctum' => 'EnsureFrontendRequestsAreStateful',
     ];
 }
