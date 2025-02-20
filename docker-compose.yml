@@ -49,11 +49,17 @@ services:
             - "8006:80"
         volumes:
             - appdata:/var/www
-            - ./docker/nginx/conf.d:/etc/nginx/conf.d
+            # - ./docker/nginx/conf.d:/etc/nginx/conf.d:delegated
         networks:
             - vms-network
         depends_on:
             - app
+        entrypoint:
+            [
+                "/bin/sh",
+                "-c",
+                "cp -r /var/www/docker/nginx/conf.d/* /etc/nginx/conf.d/ && nginx -g 'daemon off;'",
+            ]
 
 networks:
     vms-network:
