@@ -60,6 +60,11 @@ Route::prefix('admin')->group(function () {
         Route::get('settings/company', [SettingsController::class, 'fetchCompanyDetails']);
         Route::put('settings/company', [SettingsController::class, 'updateCompanyDetails']);
 
+        // Session Management
+        Route::post('settings/session-timeout', [SettingsController::class, 'updateSessionTimeout']);
+        Route::post('settings/lockout', [SettingsController::class, 'updateLockoutSettings']);
+        Route::post('settings/password', [SettingsController::class, 'updatePassword']);
+
         // Analytics
         Route::get('analytics', [AnalyticsController::class, 'index']);
         Route::get('analytics/export', [AnalyticsController::class, 'export']);
