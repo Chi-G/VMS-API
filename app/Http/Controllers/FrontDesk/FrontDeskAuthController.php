@@ -3,6 +3,7 @@ namespace App\Http\Controllers\FrontDesk;
 
 use App\Http\Controllers\Controller;
 use App\Models\FrontDesk;
+use App\Models\FrontDeskUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
@@ -22,7 +23,7 @@ class FrontDeskAuthController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
-        $frontdesk = FrontDesk::where('email', $request->email)->first();
+        $frontdesk = FrontDeskUser::where('email', $request->email)->first();
 
         if (! $frontdesk || ! Hash::check($request->password, $frontdesk->password)) {
             return response()->json(['message' => 'Invalid credentials'], 401);
@@ -74,7 +75,7 @@ class FrontDeskAuthController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
-        $frontdesk = FrontDesk::where('email', $request->email)->where('otp', $request->otp)->first();
+        $frontdesk = FrontDeskUser::where('email', $request->email)->where('otp', $request->otp)->first();
 
         if (!$frontdesk) {
             return response()->json(['error' => 'Invalid OTP'], 401);
@@ -115,5 +116,4 @@ class FrontDeskAuthController extends Controller
     {
         return response()->json($request->user());
     }
-
 }
