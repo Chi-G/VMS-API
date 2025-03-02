@@ -69,6 +69,7 @@ class StaffDashboardController extends Controller
             'message' => 'Guest checked in',
             'visit' => $visit,
             'qr_code' => base64_encode($qrCode),
+            'name' => $visit->visitor->name,
             'random_number' => $randomNumber
         ]);
     }
