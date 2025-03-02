@@ -63,10 +63,13 @@ class StaffDashboardController extends Controller
 
         $qrCode = QrCode::size(200)->generate($visit->visitor_id);
 
+        $randomNumber = rand(1000, 9999);
+
         return response()->json([
             'message' => 'Guest checked in',
             'visit' => $visit,
-            'qr_code' => base64_encode($qrCode)
+            'qr_code' => base64_encode($qrCode),
+            'random_number' => $randomNumber
         ]);
     }
 

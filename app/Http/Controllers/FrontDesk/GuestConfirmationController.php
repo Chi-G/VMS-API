@@ -52,10 +52,14 @@ class GuestConfirmationController extends Controller
 
         $qrCode = QrCode::size(200)->generate($visitor->id);
 
+        $randomNumber = rand(1000, 9999);
+
         return response()->json([
             'message' => 'Check-in successful',
             'visitor' => $visitor,
-            'qr_code' => base64_encode($qrCode)
+            'qr_code' => base64_encode($qrCode),
+            'name' => $visitor->name,
+            'random_number' => $randomNumber
         ]);
 
     }
