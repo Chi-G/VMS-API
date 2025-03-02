@@ -6,6 +6,7 @@ use App\Models\Visitor;
 use App\Models\Visit;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade as PDF;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class GuestConfirmationController extends Controller
 {
@@ -49,7 +50,14 @@ class GuestConfirmationController extends Controller
         $visit->check_in = now();
         $visit->save();
 
-        return response()->json(['message' => 'Check-in successful', 'visitor' => $visitor]);
+        $qrCode = QrCode::size(200)->generate($visitor->id);
+
+        return response()->json([
+            'message' => 'Check-in successful',
+            'visitor' => $visitor,
+            'qr_code' => base64_encode($qrCode)
+        ]);
+
     }
 
     public function checkOut(Request $request, $id)
