@@ -105,7 +105,7 @@ class AdminAuthController extends BaseController
 
     public function profile()
     {
-        Log::info('Profile route hit. Token: ' . request()->header('Authorization'));
+       Log::info('Profile route hit. Token: ' . request()->header('Authorization'));
 
         $admin = auth()->user();
 
@@ -113,7 +113,7 @@ class AdminAuthController extends BaseController
             Log::error('Unauthorized access - No user found.');
             return response()->json(['message' => 'Unauthorized'], 401);
         }
-        return response()->json(['admin' => $admin], 200);
+        return response()->json(['admin' => $admin], 200);   
     }
 
     public function logout(Request $request)
