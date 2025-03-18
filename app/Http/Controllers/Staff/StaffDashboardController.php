@@ -6,6 +6,7 @@ use App\Models\Visit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class StaffDashboardController extends Controller
 {
@@ -60,7 +61,17 @@ class StaffDashboardController extends Controller
         $visit->status = 'Checked In';
         $visit->save();
 
-        return response()->json(['message' => 'Guest checked in']);
+        $qrCode = QrCode::size(200)->generate($visit->visitor_id);
+
+        $randomNumber = rand(1000, 9999);
+
+        return response()->json([
+            'message' => 'Guest checked in',
+            'visit' => $visit,
+            'qr_code' => base64_encode($qrCode),
+            'name' => $visit->visitor->name,
+            'random_number' => $randomNumber
+        ]);
     }
 
     public function cancelVisit(Request $request)

@@ -2,17 +2,18 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Admin;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 
 class AdminSeeder extends Seeder
 {
     public function run()
     {
-        Admin::create([
+      
+        Admin::updateOrCreate([
             'name' => 'Super Admin',
             'email' => 'super_admin@sydani.com',
             'password' => Hash::make('password'),
@@ -21,7 +22,7 @@ class AdminSeeder extends Seeder
             'profile_picture' => 'profile_pictures/super_admin.jpg',
         ]);
 
-        Admin::create([
+        Admin::updateOrCreate([
             'name' => 'Admin User',
             'email' => 'admin@sydani.com',
             'password' => Hash::make('password'),

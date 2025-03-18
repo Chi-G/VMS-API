@@ -35,7 +35,7 @@ Route::prefix('admin')->group(function () {
     Route::post('reset-password', [AdminAuthController::class, 'resetPassword']);
 
     // Profile route (requires authentication)
-    Route::middleware(['auth:admin'])->group(function () {
+    Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('profile', [AdminAuthController::class, 'profile']);
 
         // Notifications
@@ -59,6 +59,11 @@ Route::prefix('admin')->group(function () {
         Route::post('settings/admins', [SettingsController::class, 'addAdmin']);
         Route::get('settings/company', [SettingsController::class, 'fetchCompanyDetails']);
         Route::put('settings/company', [SettingsController::class, 'updateCompanyDetails']);
+
+        // Session Management
+        Route::post('settings/session-timeout', [SettingsController::class, 'updateSessionTimeout']);
+        Route::post('settings/lockout', [SettingsController::class, 'updateLockoutSettings']);
+        Route::post('settings/password', [SettingsController::class, 'updatePassword']);
 
         // Analytics
         Route::get('analytics', [AnalyticsController::class, 'index']);
@@ -101,6 +106,7 @@ Route::prefix('front-desk')->group(function () {
         Route::get('history', [HistoryController::class, 'index'])->name('frontdesk.history.index');
         Route::get('notifications', [FrontDeskNotificationController::class, 'index'])->name('frontdesk.notifications.index');
         Route::get('profile', [ProfileController::class, 'index'])->name('frontdesk.profile.index');
+        Route::post('logout', [FrontDeskAuthController::class, 'logout']);
     });
 });
 

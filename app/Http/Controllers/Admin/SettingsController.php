@@ -141,6 +141,70 @@ class SettingsController extends Controller
         return response()->json(['message' => 'Security setting updated', 'securitySetting' => $securitySetting]);
     }
 
+    // New Methods for Session Management, Login Attempt Lockout, and Password Reset
+    public function updateSessionTimeout(Request $request)
+    {
+        $request->validate([
+            'timeout' => 'required|integer|min:1',
+        ]);
+
+        $timeout = $request->timeout;
+
+        // Update the session timeout setting
+        Setting::updateOrCreate(
+            ['admin_id' => $request->user()->id, 'key' => 'session_timeout'],
+            ['value' => $timeout]
+        );
+
+        // Update the session lifetime in the configuration
+        config(['session.lifetime' => $timeout]);
+
+        return response()->json(['message' => 'Session timeout updated', 'timeout' => $timeout]);
+    }
+
+    public function updateLockoutSettings(Request $request)
+    {
+        $request->validate([
+            'max_attempts' => 'required|integer|min:1',
+            'decay_minutes' => 'required|integer|min:1',
+        ]);
+
+        $maxAttempts = $request->max_attempts;
+        $decayMinutes = $request->decay_minutes;
+
+        // Update the lockout settings
+        Setting::updateOrCreate(
+            ['admin_id' => $request->user()->id, 'key' => 'lockout_max_attempts'],
+            ['value' => $maxAttempts]
+        );
+
+        Setting::updateOrCreate(
+            ['admin_id' => $request->user()->id, 'key' => 'lockout_decay_minutes'],
+            ['value' => $decayMinutes]
+        );
+
+        return response()->json(['message' => 'Lockout settings updated', 'max_attempts' => $maxAttempts, 'decay_minutes' => $decayMinutes]);
+    }
+
+    public function updatePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required|string',
+            'new_password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $admin = $request->user();
+
+        if (!Hash::check($request->current_password, $admin->password)) {
+            return response()->json(['message' => 'Current password is incorrect'], 400);
+        }
+
+        $admin->password = Hash::make($request->new_password);
+        $admin->save();
+
+        return response()->json(['message' => 'Password updated successfully']);
+    }
+
     public function updateProfile(Request $request)
     {
         $request->validate([

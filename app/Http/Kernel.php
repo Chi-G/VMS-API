@@ -2,10 +2,10 @@
 
 namespace App\Http;
 
+use Illuminate\Auth\Middleware\Authenticate;
+use Illuminate\Routing\Middleware\ThrottleRequests;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
-use Illuminate\Routing\Middleware\ThrottleRequests;
-use Illuminate\Auth\Middleware\Authenticate;
 
 class Kernel extends HttpKernel
 {
@@ -15,24 +15,26 @@ class Kernel extends HttpKernel
 
     protected $middlewareGroups = [
         'api' => [
+            'cors',
             \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
-            'auth:sanctum',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],
 
         'web' => [
-        \App\Http\Middleware\EncryptCookies::class,
-        \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
-        \Illuminate\Session\Middleware\StartSession::class,
-        \Illuminate\View\Middleware\ShareErrorsFromSession::class,
-        \App\Http\Middleware\VerifyCsrfToken::class,
-        \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            \App\Http\Middleware\EncryptCookies::class,
+            \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+            \Illuminate\Session\Middleware\StartSession::class,
+            \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+            \App\Http\Middleware\VerifyCsrfToken::class,
+            \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],
     ];
 
     protected $routeMiddleware = [
         'auth' => \App\Http\Middleware\Authenticate::class,
         'auth.api' => \App\Http\Middleware\Authenticate::class,
+        'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'auth:sanctum' => \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+        'cors' => \App\Http\Middleware\Cors::class,
     ];
 }
